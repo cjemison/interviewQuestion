@@ -10,7 +10,7 @@ public class App {
   private final String VOWELS = "Vowels";
 
   public static void main(String[] args) {
-    // how many vowels/consonants
+    //count how many vowels/consonants
     System.out.println(new App().run("Gogo is a wonderful place to be."));
   }
 
