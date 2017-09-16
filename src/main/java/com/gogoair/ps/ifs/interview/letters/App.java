@@ -15,24 +15,10 @@ public class App {
   }
 
   private Map<String, AtomicInteger> run(final String example) {
-    return streams(example);
+    return count(example);
   }
 
-  private Map<String, AtomicInteger> loop(final String example) {
-    final Map<String, AtomicInteger> map = initMap();
-    for (int i = 0; i < example.length(); i++) {
-      if (isAlpha(example.charAt(i))) {
-        if (isVowel(example.charAt(i))) {
-          map.get(VOWELS).incrementAndGet();
-        } else {
-          map.get(CONST).incrementAndGet();
-        }
-      }
-    }
-    return map;
-  }
-
-  private Map<String, AtomicInteger> streams(final String example) {
+  private Map<String, AtomicInteger> count(final String example) {
     final Map<String, AtomicInteger> map = initMap();
     Arrays.stream(example.split(""))
           .map(String::toCharArray)
