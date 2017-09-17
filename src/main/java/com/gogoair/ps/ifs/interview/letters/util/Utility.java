@@ -13,18 +13,6 @@ public class Utility {
   public static final String CONST = "Constants";
   public static final String VOWELS = "Vowels";
 
-  public static boolean isVowel(final char c) {
-    int[] vowels = {65, 69, 73, 79, 85, 97, 101, 105, 111, 117};
-    for (final int vowel : vowels) {
-      if (((int) c) == vowel) return true;
-    }
-    return false;
-  }
-
-  public static boolean isAlpha(final char c) {
-    return ((int) c) >= 65 && ((int) c) <= 122;
-  }
-
   public static void generateFile(final long count) {
     try {
       final File file = new File("data.txt");
@@ -41,9 +29,10 @@ public class Utility {
     } catch (IOException e) {
       e.printStackTrace();
     }
+    System.out.println("File generated");
   }
 
-  public ConcurrentHashMap<String, AtomicInteger> initMap() {
+  public static ConcurrentHashMap<String, AtomicInteger> initMap() {
     final ConcurrentHashMap<String, AtomicInteger> map = new ConcurrentHashMap<>();
     map.put(CONST, new AtomicInteger());
     map.put(VOWELS, new AtomicInteger());
