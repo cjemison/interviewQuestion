@@ -1,54 +1,33 @@
 package com.gogoair.ps.ifs.interview.letters;
 
+import com.gogoair.ps.ifs.interview.letters.thread.CounterWorker;
+import com.gogoair.ps.ifs.interview.letters.util.Utility;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class App {
-  private final String CONST = "Constants";
-  private final String VOWELS = "Vowels";
+  private static final int BUFFER_SIZE = 1024;
 
-  public static void main(String[] args) {
-    //count how many vowels/consonants
-    System.out.println(new App().run("Gogo is a wonderful place to be."));
-  }
-
-  private Map<String, AtomicInteger> run(final String example) {
-    return count(example);
-  }
-
-  private Map<String, AtomicInteger> count(final String example) {
-    final Map<String, AtomicInteger> map = initMap();
-    Arrays.stream(example.split(""))
-          .map(String::toCharArray)
-          .map(chars -> chars[0])
-          .filter(this::isAlpha).forEach(c -> {
-      if (isVowel(c)) {
-        map.get(VOWELS).incrementAndGet();
-      } else {
-        map.get(CONST).incrementAndGet();
+  public static void main(String[] args) throws IOException {
+    final ConcurrentHashMap<String, AtomicInteger> map = Utility.initMap();
+    final ExecutorService executor = Executors.newFixedThreadPool(100);
+    try (FileInputStream fileInputStream = new FileInputStream(new File("data.txt"))) {
+      final byte[] buffer = new byte[BUFFER_SIZE];
+      int read;
+      while ((read = fileInputStream.read(buffer, 0, BUFFER_SIZE)) != -1) {
+        executor.execute(new CounterWorker(map, Arrays.copyOf(buffer, BUFFER_SIZE)));
       }
-    });
-    return map;
-  }
-
-  private boolean isVowel(final char c) {
-    int[] vowels = {65, 69, 73, 79, 85, 97, 101, 105, 111, 117};
-    for (final int vowel : vowels) {
-      if (((int) c) == vowel) return true;
+    } catch (Exception e) {
+      e.printStackTrace();
     }
-    return false;
-  }
-
-  private boolean isAlpha(final char c) {
-    return ((int) c) >= 65 && ((int) c) <= 122;
-  }
-
-  private Map<String, AtomicInteger> initMap() {
-    final Map<String, AtomicInteger> map = new HashMap<>();
-    map.put(CONST, new AtomicInteger());
-    map.put(VOWELS, new AtomicInteger());
-    return map;
+    executor.shutdown();
+    System.out.println(map);
   }
 }
