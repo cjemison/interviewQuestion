@@ -19,12 +19,18 @@ public class Utility {
       final BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file));
       final PrintWriter printWriter = new PrintWriter(bufferedWriter);
       for (int i = 0; i < count; i++) {
-        printWriter.print((char) Math.abs(new Random().nextInt() % 128));
-        if (i % 88 == 0 && i > 0) {
-          printWriter.println();
+        if (Math.abs(new Random().nextInt() % 2) == 0) {
+          int value = Math.abs(new Random().nextInt() % (90 - 65)) + 65;
+          printWriter.print((char) value);
+        } else {
+          int value = Math.abs(new Random().nextInt() % (122 - 97)) + 97;
+          printWriter.print((char) value);
+        }
+        if (i % 100 == 0) {
           printWriter.flush();
         }
       }
+      printWriter.flush();
       printWriter.close();
     } catch (IOException e) {
       e.printStackTrace();
@@ -34,8 +40,8 @@ public class Utility {
 
   public static ConcurrentHashMap<String, AtomicInteger> initMap() {
     final ConcurrentHashMap<String, AtomicInteger> map = new ConcurrentHashMap<>();
-    map.put(CONST, new AtomicInteger());
-    map.put(VOWELS, new AtomicInteger());
+    map.put(CONST, new AtomicInteger(0));
+    map.put(VOWELS, new AtomicInteger(0));
     return map;
   }
 }

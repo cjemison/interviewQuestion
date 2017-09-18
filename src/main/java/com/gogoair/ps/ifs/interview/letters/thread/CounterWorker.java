@@ -3,33 +3,33 @@ package com.gogoair.ps.ifs.interview.letters.thread;
 import com.gogoair.ps.ifs.interview.letters.util.Utility;
 
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class CounterWorker implements Runnable {
   private final ConcurrentHashMap<String, AtomicInteger> map;
-  private final byte[] buffer;
+  private final CountDownLatch countDownLatch;
+  private final int value;
 
   public CounterWorker(final ConcurrentHashMap<String, AtomicInteger> map,
-                       final byte[] buffer) {
+                       final CountDownLatch countDownLatch,
+                       final int value) {
     this.map = map;
-    this.buffer = buffer;
+    this.countDownLatch = countDownLatch;
+    this.value = value;
   }
 
   @Override
   public void run() {
-    if (buffer != null && buffer.length > 0) {
-      for (byte b : buffer) {
-        int i = (int) b;
-        char c = ((char) i);
-        if (this.isAlpha(c)) {
-          if (this.isVowel(c)) {
-            map.get(Utility.VOWELS).incrementAndGet();
-          } else {
-            map.get(Utility.CONST).incrementAndGet();
-          }
-        }
+    char c = (char) value;
+    if (this.isAlpha(c)) {
+      if (this.isVowel(c)) {
+        map.get(Utility.VOWELS).incrementAndGet();
+      } else {
+        map.get(Utility.CONST).incrementAndGet();
       }
     }
+    countDownLatch.countDown();
   }
 
   private boolean isVowel(final char c) {
@@ -41,6 +41,7 @@ public class CounterWorker implements Runnable {
   }
 
   private boolean isAlpha(final char c) {
-    return ((int) c) >= 65 && ((int) c) <= 122;
+    return ((int) c) >= 65 && ((int) c) <= 90
+          || ((int) c) >= 97 && ((int) c) <= 122;
   }
 }
